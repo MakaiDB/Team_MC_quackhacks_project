@@ -2,7 +2,7 @@
 Create sessions with a host user and a unique code to allow users to join
 
 def create_session(host_user)
-    code = random str + digits must be 9 characters long
+    code = random  digits must be 9 characters long
     session = Session(host=host_user, code=code)
     add host_user to session's user list
     return session
@@ -31,11 +31,38 @@ def add_movie_to_playlist(session, movie_data):
     if movie in playlist
         return "Movie already in playlist"
 
-
 """
+import os
+import sys
+import django
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
+django.setup()
+
+from mysite.models import Session
 import random
-import string
+
 
 def unique_code(length=9):
-    characters = string.ascii_letters + string.digits
+    """Generate a unique session code with numbers only."""
+    code = random.randint(10**(length-1), 10**length - 1)
+    return str(code)
+
+print(unique_code())
+
+def create_session(host_user):
+    code = unique_code()
+    session = Session(host=host_user, code=code)
+    session.users.add(host_user)
+    session.save()
+    return session
+
+def join_session(user, code):
+    session = Session.objects.filter(code=code).first()
+    if session:
+        session.users.add(user)
+        session.save()
+        return session
+    else:
+        return "Invalid session code"
     
