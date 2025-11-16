@@ -36,10 +36,10 @@ import os
 import sys
 import django
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "moviepicker.settings")
 django.setup()
 
-from mysite.models import Session
+from models import Session
 import random
 
 
@@ -59,10 +59,20 @@ def create_session(host_user):
 
 def join_session(user, code):
     session = Session.objects.filter(code=code).first()
-    if session:
+    if code == code:
         session.users.add(user)
         session.save()
-        return session
     else:
-        return "Invalid session code"
+        print("Session not found")
+        return None
     
+def search_for_movie(query):
+    import requests
+
+    url = "https://api.themoviedb.org/3/search/movie"
+    parameters = {
+        "api_key": os.getenv("TMDB_API_KEY"),
+        "query": query
+    }
+    response = requests.get(url, params=parameters)
+    return response.json().get("results", [])
