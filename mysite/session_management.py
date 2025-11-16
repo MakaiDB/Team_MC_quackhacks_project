@@ -76,3 +76,27 @@ def search_for_movie(query):
     }
     response = requests.get(url, params=parameters)
     return response.json().get("results", [])
+
+def add_movie_to_playlist(session, movie_data):
+    from models import Movie, Playlist
+
+    movie, created = Movie.objects.get_or_create(
+        tmdb_id=movie_data['id'],
+        defaults={'title': movie_data['title'],} )
+    
+    playlist = session.playlist
+    if movie not in playlist.movies.all():
+        playlist.movies.add(movie)
+        playlist.save()
+        return "Movie added to playlist"
+    else:
+        return "Movie already in playlist"
+    
+def vote_on_movie(user, movie, session, decision):
+    """Record a user's vote on a movie within a session and add their vote into a list"""
+    
+
+    
+
+
+        
